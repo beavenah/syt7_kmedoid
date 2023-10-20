@@ -13,6 +13,6 @@ For each frame, translate and wrap the coordinates so that PROA, then PROB, then
 
 <img width="668" alt="image" src="https://github.com/beavenah/syt7_kmedoid/assets/93334552/a101f355-c928-4df2-a674-b4406a760c19">
 
-With six clusters, I got a silhouette score of 0.17
+**3. silhouette.py:** With six clusters, I got a silhouette score of 0.17
 
-**3. clustering.py:** I read in the saved coordinates file (coordinates.tsv) and convert it into a pandas DataFrame. I then read the RMSD matrix file () and and do k-medoid clustering. I put the cluster ID information into the DataFrame and print out the medoid information.
+**4. clustering.py:** I read in the saved coordinates file (coordinates.tsv) and convert it into a pandas DataFrame. I then read the RMSD matrix file () and and do k-medoid clustering. I put the cluster ID information into the DataFrame and print out the medoid information.
