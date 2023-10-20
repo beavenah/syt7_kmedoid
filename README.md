@@ -1,2 +1,18 @@
 # syt7_kmedoid
-Use scikit-learn-extra's KMedoids to cluster cholesterol poses around Syt7 protein
+Use scikit-learn-extra's KMedoids to cluster cholesterol poses under Syt-7 protein.
+
+**Purpose:** The purpose of the script is to cluster typical cholesterol poses that reside underneath a superficial membrane protein, synaptotagmin 7 (Syt-7). Also, I wanted to familiarize myself with MDAnalysis and k-medoid clustering.
+
+**System information:** There are three identical replicas that contain four total proteins (segids PROA, PROB, PROC, and PROD). PROA and PROC are in the "upper" membrane leaflet, while PROB and PROD are in the "lower" leaflet. The membrane is a POPC+POPS+cholesterol mixture, and I am only concerned with cholesterol's position underneath the Syt-7. I have defined four important points for the protein's position: i) the protein's apex, ii) the protein's center of mass, iii) the protein's calcium binding loops (CBLs) center of mass, and iv) the location of residue 229 in the CBL region. These Syt-7 proteins have their CBLs buried deeper in the membrane than the other residues. The residue 229 is buried the deepest of all residues. The protein is fairly rigid in secondary/tertiary structure, therefore, I chose the overall CBL region and residue 229 as important markers for the protein's conformation/orientation.
+
+**1. get_neighbors.py:** First, read in the trajectory for all replicas (every 10th frame). My trajectory was saved every 0.1 ns, so the read structures are from every 1 ns. I have three replicas and four proteins per replica. Therefore, I saved the coordinates of 1000 * 3 * 4 = 12000 structures.
+
+For each frame, translate and wrap the coordinates so that PROA, then PROB, then PROC, then PROD CBL region center of mass is centered in the unit cell. If the target is currently PROB or PROD, then rotate the box so that they are now in the "upper" leaflet. Rotate the box around the z-axis so that the centered protein's center of mass lies along the -x axis. This translation/rotation is done to align the protein with previous analysis (not shown here). Find the two nearest cholesterol molecules relative to residue 229. Save the positions of: i) the protein's "apex", ii) the protein's center of mass, iii) the protein's CBL region center of mass (near the origin), and iv) the oxygen atoms of the two nearest cholesterol molecules. Finally, undo all rotations and translations just to be safe for the next step. Finally, build an all-against-all RMSD matrix using the saved positions of the protein and cholesterol markers described. Creating the all-against-all RMSD matrix takes ~1 hour and creates a matrix file that is ~3.5 GB for my data set. 
+
+**2. elbow.py:** I used the elbow method to determine the "optimal" number of k-medoid clusters. I used the Partitioning Around Medoids (PAM) method for the clustering. The metric is the all-against-all RMSD matrix calculated in get_neighbors.py. Creating 2-9 clusters takes ~... Presumably, this can be done as a swarm instead of serial. I found that the elbow method produces a smooth curve instead of an elbow-y one. My guess is that this is because the cholesterol-protein interactions are weak and fairly transient. I could try the elbow method with more clusters, but tests on smaller data sets suggests that it doesn't matter too much.
+
+<img width="668" alt="image" src="https://github.com/beavenah/syt7_kmedoid/assets/93334552/a101f355-c928-4df2-a674-b4406a760c19">
+
+With six clusters, I got a silhouette score of 0.17
+
+**3. clustering.py:** I read in the saved coordinates file (coordinates.tsv) and convert it into a pandas DataFrame. I then read the RMSD matrix file () and and do k-medoid clustering. I put the cluster ID information into the DataFrame and print out the medoid information.
